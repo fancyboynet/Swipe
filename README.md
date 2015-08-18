@@ -48,6 +48,8 @@ Swipe can take an optional second parameter– an object of key/value settings:
 
 - **auto** Integer - begin with auto slideshow (time in milliseconds between slides)
 
+- **autoResume** Boolean *(default:false)* - whether resume after transitionEnd event
+
 - **continuous** Boolean *(default:true)* - create an infinite feel with no endpoints
 
 - **disableScroll** Boolean *(default:false)* - stop any touches on this container from scrolling the page
@@ -66,6 +68,7 @@ window.mySwipe = new Swipe(document.getElementById('slider'), {
   startSlide: 2,
   speed: 400,
   auto: 3000,
+  autoResume : true,
   continuous: true,
   disableScroll: false,
   stopPropagation: false,

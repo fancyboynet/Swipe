@@ -4,7 +4,7 @@
  * Brad Birdsall
  * Copyright 2013, MIT License
  *
-*/
+ */
 
 function Swipe(container, options) {
 
@@ -33,6 +33,7 @@ function Swipe(container, options) {
   var index = parseInt(options.startSlide, 10) || 0;
   var speed = options.speed || 300;
   options.continuous = options.continuous !== undefined ? options.continuous : true;
+  options.autoResume = !!options.autoResume;
 
   function setup() {
 
@@ -108,7 +109,6 @@ function Swipe(container, options) {
   }
 
   function slide(to, slideSpeed) {
-
     // do nothing if already on requested slide
     if (index == to) return;
 
@@ -165,15 +165,15 @@ function Swipe(container, options) {
     if (!style) return;
 
     style.webkitTransitionDuration =
-    style.MozTransitionDuration =
-    style.msTransitionDuration =
-    style.OTransitionDuration =
-    style.transitionDuration = speed + 'ms';
+        style.MozTransitionDuration =
+            style.msTransitionDuration =
+                style.OTransitionDuration =
+                    style.transitionDuration = speed + 'ms';
 
     style.webkitTransform = 'translate(' + dist + 'px,0)' + 'translateZ(0)';
     style.msTransform =
-    style.MozTransform =
-    style.OTransform = 'translateX(' + dist + 'px)';
+        style.MozTransform =
+            style.OTransform = 'translateX(' + dist + 'px)';
 
   }
 
@@ -229,6 +229,12 @@ function Swipe(container, options) {
 
   }
 
+  function toResume(){
+    delay = options.auto || 0;
+    if(delay){
+      begin();
+    }
+  }
 
   // setup initial vars
   var start = {};
@@ -321,13 +327,13 @@ function Swipe(container, options) {
         } else {
 
           delta.x =
-            delta.x /
+              delta.x /
               ( (!index && delta.x > 0               // if first slide and sliding left
-                || index == slides.length - 1        // or if last slide and sliding right
-                && delta.x < 0                       // and if sliding at all
+                  || index == slides.length - 1        // or if last slide and sliding right
+                  && delta.x < 0                       // and if sliding at all
               ) ?
-              ( Math.abs(delta.x) / width + 1 )      // determine resistance level
-              : 1 );                                 // no resistance if false
+                  ( Math.abs(delta.x) / width + 1 )      // determine resistance level
+                  : 1 );                                 // no resistance if false
 
           // translate 1:1
           translate(index-1, delta.x + slidePos[index-1], 0);
@@ -345,14 +351,14 @@ function Swipe(container, options) {
 
       // determine if slide attempt triggers next/prev slide
       var isValidSlide =
-            Number(duration) < 250               // if slide duration is less than 250ms
-            && Math.abs(delta.x) > 20            // and if slide amt is greater than 20px
-            || Math.abs(delta.x) > width/2;      // or if slide amt is greater than half the width
+          Number(duration) < 250               // if slide duration is less than 250ms
+          && Math.abs(delta.x) > 20            // and if slide amt is greater than 20px
+          || Math.abs(delta.x) > width/2;      // or if slide amt is greater than half the width
 
       // determine if slide attempt is past start and end
       var isPastBounds =
-            !index && delta.x > 0                            // if first slide and slide amt is greater than 0
-            || index == slides.length - 1 && delta.x < 0;    // or if last slide and slide amt is less than 0
+          !index && delta.x > 0                            // if first slide and slide amt is greater than 0
+          || index == slides.length - 1 && delta.x < 0;    // or if last slide and slide amt is less than 0
 
       if (options.continuous) isPastBounds = false;
 
@@ -422,11 +428,13 @@ function Swipe(container, options) {
 
     },
     transitionEnd: function(event) {
-
       if (parseInt(event.target.getAttribute('data-index'), 10) == index) {
-
-        if (delay) begin();
-
+        if (delay){
+          begin();
+        }
+        else if(options.autoResume){
+          toResume();
+        }
         options.transitionEnd && options.transitionEnd.call(event, index, slides[index]);
 
       }
@@ -437,7 +445,6 @@ function Swipe(container, options) {
 
   // trigger setup
   setup();
-
   // start auto slideshow if applicable
   if (delay) begin();
 

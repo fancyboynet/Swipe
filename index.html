@@ -67,7 +67,8 @@
   
   <button onclick='mySwipe.prev()'>prev</button> 
   <button onclick='mySwipe.next()'>next</button>
-
+  <button onclick='mySwipe.stop()'>stop</button>
+  <button onclick='mySwipe.kill()'>kill</button>
 </div>
 
 
@@ -81,7 +82,8 @@
 var elem = document.getElementById('mySwipe');
 window.mySwipe = Swipe(elem, {
   // startSlide: 4,
-  // auto: 3000,
+   auto: 3000,
+   autoResume : true
   // continuous: true,
   // disableScroll: true,
   // stopPropagation: true,
